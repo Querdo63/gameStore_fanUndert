@@ -58,7 +58,7 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
 
 @app.post("/cart/add")
 def add_to_cart(item: schemas.CartCreate, db: Session = Depends(get_db)):
-    return crud.add_to_cart(db, item)
+    return crud.add_to_cart(db, item) # Передаем db и объект целиком
 
 @app.get("/cart/{user_id}")
 def get_user_cart(user_id: int, db: Session = Depends(get_db)):

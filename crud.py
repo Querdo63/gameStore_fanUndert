@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from app import models, schemas
+import models, schemas
 
 # ========== CRUD для игр ==========
 def get_games(db: Session, skip: int = 0, limit: int = 100):
@@ -68,22 +68,20 @@ def authenticate_user(db: Session, username: str, password: str):
 
 
 # ========== CRUD для корзины ==========
-def get_cart_items(db: Session, user_id: int, status: str = "cart"):
-    """Получить корзину пользователя"""
-    return db.query(models.Cart).filter(
-        and_(models.Cart.user_id == user_id, models.Cart.status == status)
-    ).all()
+def get_cart_items(db: Session, user_id: int):
+    # .all() вернет список объектов Cart, у которых должно быть свойство .game
+    return db.query(models.Cart).filter(models.Cart.user_id == user_id).all()
 
-def add_to_cart(db: Session, user_id: int, game_id: int, quantity: int = 1):
-    """Добавить игру в корзину"""
-    # Проверяем, есть ли уже такая игра в корзине
-    cart_item = db.query(models.Cart).filter(
-        and_(
-            models.Cart.user_id == user_id,
-            models.Cart.game_id == game_id,
-            models.Cart.status == "cart"
-        )
-    ).first()
+def add_to_cart(db: Session, item: schemas.CartCreate):
+    db_item = models.Cart(
+        user_id=item.user_id,
+        game_id=item.game_id,
+        quantity=item.quantity  # Проверь, как написано в models: quanity или quantity
+    )
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+    return db_item
     
     if cart_item:
         cart_item.quantity += quantity

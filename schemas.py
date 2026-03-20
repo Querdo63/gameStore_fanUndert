@@ -61,9 +61,8 @@ class CartItem(BaseModel):
     user_id: int
     game_id: int
     quantity: int
-    status: str
-    game: Game  # Включаем информацию об игре
-    
+    game: Game
+
     class Config:
         from_attributes = True
 
