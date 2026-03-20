@@ -1,0 +1,679 @@
+/* Стиль в духе Undertale: пиксельный, чёрно-белый, красные акценты */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #000;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 16px;
+    line-height: 1.4;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Сайдбар */
+.sidebar {
+    width: 260px;
+    background: #000;
+    border-right: 2px solid #fff;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.sidebar > div {
+    border-bottom: 1px solid #fff;
+    padding-bottom: 15px;
+}
+
+.sidebar .icon {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+    filter: drop-shadow(0 0 2px #f00);
+}
+
+.user-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.user-block:hover {
+    box-shadow: 0 0 0 2px #f00;
+}
+
+.username {
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.search-block {
+    transition: all 0.1s ease;
+}
+
+.search-block:hover {
+    box-shadow: 0 0 0 2px #f00;
+}
+
+.search-block label {
+    display: block;
+    margin-bottom: 8px;
+    color: #f00;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#search-input {
+    width: 100%;
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 8px 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+}
+
+#search-input:focus {
+    border-color: #f00;
+}
+
+.cart-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.2rem;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+.cart-block:hover {
+    box-shadow: 0 0 0 2px #f00;
+}
+
+.cart-count {
+    margin-left: auto;
+    background: #f00;
+    color: #000;
+    font-weight: bold;
+    padding: 2px 8px;
+    border-radius: 0;
+    border: 1px solid #fff;
+}
+
+/* Основная область */
+.main {
+    flex: 1;
+    padding: 30px 20px;
+}
+
+.store-title {
+    font-size: 3rem;
+    text-align: center;
+    margin-bottom: 40px;
+    letter-spacing: 8px;
+    text-shadow: 4px 4px 0 #f00;
+    color: #fff;
+    word-break: break-word;
+}
+
+/* Сетка карточек */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 25px;
+}
+
+/* Карточка игры */
+.game-card {
+    background: #000;
+    border: 2px solid #fff;
+    padding: 15px 10px 10px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.game-card:hover {
+    border-color: #f00;
+    transform: scale(1.02);
+    box-shadow: 0 0 0 2px #f00;
+}
+
+.game-image {
+    width: 100%;
+    height: 140px;
+    background: #222;
+    border: 2px solid #fff;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.game-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #f00;
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-genre,
+.game-author {
+    font-size: 0.9rem;
+    opacity: 0.8;
+    margin-bottom: 3px;
+}
+
+.game-price {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin: 10px 0 5px;
+    border-top: 1px dashed #fff;
+    padding-top: 8px;
+    width: 100%;
+}
+
+/* Модальное окно */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #000;
+    border: 4px solid #fff;
+    max-width: 600px;
+    width: 90%;
+    padding: 50px 25px 30px 25px;  /* отступ сверху увеличен */
+    position: relative;
+    color: #fff;
+    box-shadow: 8px 8px 0 #f00;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    background: none;
+    border: 2px solid #fff;
+    color: #fff;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: inherit;
+}
+
+.modal-close:hover {
+    background: #f00;
+    border-color: #f00;
+    color: #000;
+}
+
+.modal-details {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-details h2 {
+    color: #f00;
+    text-transform: uppercase;
+    font-size: 2rem;
+    border-bottom: 2px solid #fff;
+    padding-bottom: 5px;
+}
+
+.modal-details .modal-image {
+    width: 100%;
+    height: 200px;
+    background: #222;
+    border: 2px solid #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-details p {
+    font-size: 1.1rem;
+}
+
+.modal-details .price {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #f00;
+    text-align: right;
+    border-top: 1px solid #fff;
+    padding-top: 15px;
+}
+
+.add-to-cart-btn {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    font-size: 1.5rem;
+    padding: 15px;
+    text-transform: uppercase;
+    font-family: inherit;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.1s;
+}
+
+.add-to-cart-btn:hover {
+    background: #f00;
+    border-color: #f00;
+    color: #000;
+}
+
+/* Дополнительные стили для модалок профиля и корзины */
+.profile-details {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.profile-avatar {
+    font-size: 4rem;
+    background: #222;
+    border: 2px solid #fff;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+}
+
+.logout-btn {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.logout-btn:hover {
+    background: #f00;
+    border-color: #f00;
+    color: #000;
+}
+
+/* Корзина */
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #fff;
+    padding: 12px 0;
+    margin-bottom: 10px;
+}
+
+.cart-item-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid #fff;
+}
+
+.cart-item-info {
+    flex: 2;
+}
+
+.cart-item-title {
+    font-weight: bold;
+    color: #f00;
+}
+
+.cart-item-price {
+    font-size: 0.9rem;
+}
+
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cart-item-quantity button {
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cart-item-quantity button:hover {
+    background: #f00;
+    border-color: #f00;
+}
+
+.cart-item-remove {
+    background: none;
+    border: 1px solid #fff;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.cart-item-remove:hover {
+    background: #f00;
+    border-color: #f00;
+}
+
+.cart-total {
+    font-size: 1.5rem;
+    text-align: right;
+    margin: 20px 0;
+    border-top: 2px solid #fff;
+    padding-top: 15px;
+}
+
+.checkout-btn {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    width: 100%;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.checkout-btn:hover {
+    background: #f00;
+    border-color: #f00;
+}
+/* ... весь предыдущий CSS остаётся ... */
+
+/* Дополнительные стили для модалок профиля и корзины */
+.profile-details {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.profile-avatar {
+    font-size: 4rem;
+    background: #222;
+    border: 2px solid #fff;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0;
+}
+
+.logout-btn {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px 20px;
+    font-family: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.logout-btn:hover {
+    background: #f00;
+    border-color: #f00;
+    color: #000;
+}
+
+/* Корзина */
+.cart-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #fff;
+    padding: 12px 0;
+    margin-bottom: 10px;
+}
+
+.cart-item-img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border: 1px solid #fff;
+}
+
+.cart-item-info {
+    flex: 2;
+}
+
+.cart-item-title {
+    font-weight: bold;
+    color: #f00;
+}
+
+.cart-item-price {
+    font-size: 0.9rem;
+}
+
+.cart-item-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.cart-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.cart-item-quantity button {
+    background: #000;
+    border: 1px solid #fff;
+    color: #fff;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.cart-item-quantity button:hover {
+    background: #f00;
+    border-color: #f00;
+}
+
+.cart-item-remove {
+    background: none;
+    border: 1px solid #fff;
+    color: #fff;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.cart-item-remove:hover {
+    background: #f00;
+    border-color: #f00;
+}
+
+.cart-total {
+    font-size: 1.5rem;
+    text-align: right;
+    margin: 20px 0;
+    border-top: 2px solid #fff;
+    padding-top: 15px;
+}
+
+.checkout-btn {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    width: 100%;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.checkout-btn:hover {
+    background: #f00;
+    border-color: #f00;
+}
+
+/* Стиль для картинок в карточках и модалках */
+.game-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.modal-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ... весь предыдущий CSS остаётся без изменений ... */
+
+/* Стили для модального окна авторизации */
+.auth-tabs {
+    display: flex;
+    border-bottom: 2px solid #fff;
+    margin-bottom: 20px;
+}
+
+.auth-tab {
+    flex: 1;
+    background: #000;
+    border: none;
+    color: #fff;
+    font-family: inherit;
+    font-size: 1.2rem;
+    padding: 10px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.1s;
+}
+
+.auth-tab.active {
+    color: #f00;
+    border-bottom: 2px solid #f00;
+    margin-bottom: -2px;
+}
+
+.auth-tab:hover {
+    background: #f00;
+    color: #000;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.auth-form.hidden {
+    display: none;
+}
+
+.auth-input {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+}
+
+.auth-input:focus {
+    border-color: #f00;
+}
+
+.auth-submit {
+    background: #000;
+    border: 2px solid #fff;
+    color: #fff;
+    padding: 12px;
+    font-family: inherit;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: 0.1s;
+}
+
+.auth-submit:hover {
+    background: #f00;
+    border-color: #f00;
+    color: #000;
+}
+
+.auth-error {
+    color: #f00;
+    text-align: center;
+    margin-top: 10px;
+}

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UnderStore — магазин игр</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Сайдбар -->
+        <aside class="sidebar">
+            <div class="user-block" id="user-block">
+                <span class="icon">👤</span>
+                <span class="username" id="username-display">Войти</span>
+            </div>
+            <div class="search-block">
+                <label for="search-input">🔍 Поиск</label>
+                <input type="text" id="search-input" placeholder="название игры...">
+            </div>
+            <div class="cart-block" id="cart-block">
+                <span class="icon">🛒</span>
+                <span>Корзина</span>
+                <span class="cart-count" id="cart-count">0</span>
+            </div>
+        </aside>
+
+        <!-- Основной контент -->
+        <main class="main">
+            <h1 class="store-title">UNDERSTORE</h1>
+            <div class="games-grid" id="games-grid"></div>
+        </main>
+    </div>
+
+    <!-- Модальное окно игры -->
+    <div class="modal-overlay" id="modal-overlay">
+        <div class="modal-content" id="modal-content">
+            <button class="modal-close" id="modal-close">✖</button>
+            <div class="modal-details" id="modal-details"></div>
+        </div>
+    </div>
+
+    <!-- Модальное окно профиля -->
+    <div class="modal-overlay" id="profile-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="profile-modal-close">✖</button>
+            <div class="profile-details" id="profile-details">
+                <!-- Заполняется динамически -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно корзины -->
+    <div class="modal-overlay" id="cart-modal">
+        <div class="modal-content cart-modal-content">
+            <button class="modal-close" id="cart-modal-close">✖</button>
+            <h2>Корзина</h2>
+            <div id="cart-items-container"></div>
+            <div class="cart-total" id="cart-total">Итого: 0 ₽</div>
+            <button class="checkout-btn" id="checkout-btn">Оформить заказ</button>
+        </div>
+    </div>
+
+    <!-- Модальное окно авторизации/регистрации -->
+    <div class="modal-overlay" id="auth-modal">
+        <div class="modal-content">
+            <button class="modal-close" id="auth-modal-close">✖</button>
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Вход</button>
+                <button class="auth-tab" data-tab="register">Регистрация</button>
+            </div>
+            <div class="auth-forms">
+                <!-- Форма входа -->
+                <div class="auth-form" id="login-form">
+                    <input type="text" id="login-username" placeholder="Логин" class="auth-input">
+                    <input type="password" id="login-password" placeholder="Пароль" class="auth-input">
+                    <button class="auth-submit" id="login-submit">Войти</button>
+                    <div class="auth-error" id="login-error"></div>
+                </div>
+                <!-- Форма регистрации -->
+                <div class="auth-form hidden" id="register-form">
+                    <input type="text" id="reg-username" placeholder="Логин" class="auth-input">
+                    <input type="password" id="reg-password" placeholder="Пароль" class="auth-input">
+                    <button class="auth-submit" id="register-submit">Зарегистрироваться</button>
+                    <div class="auth-error" id="register-error"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js" defer></script>
+</body>
+</html>
