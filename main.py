@@ -9,6 +9,28 @@ import models, schemas, crud
 # Создаем таблицы в базе данных (если их еще нет)
 models.Base.metadata.create_all(bind=models.engine)
 
+def seed_initial_data():
+    # Открываем временную сессию для проверки базы
+    db = models.SessionLocal()
+    try:
+        # Если в таблице Game нет ни одной записи (база только что создана)
+        if db.query(models.Game).count() == 0:
+            undertale = models.Game(
+                title="UNDERTALE",
+                price=899,
+                genre="RPG",
+                author="Toby Fox",
+                description="The RPG game where you don't have to destroy anyone.",
+                image_url="https://upload.wikimedia.org/wikipedia/ru/a/a6/Undertale_logo.jpg"
+            )
+            db.add(undertale)
+            db.commit()
+            print("✅ Стартовая игра UNDERTALE успешно добавлена в новую базу!")
+    finally:
+        db.close() # Обязательно закрываем сессию
+
+# Запускаем нашу функцию при старте файла
+seed_initial_data()
 app = FastAPI(title="UnderStore API")
 
 # Разрешаем фронтенду (JS) делать запросы к бэкенду.
