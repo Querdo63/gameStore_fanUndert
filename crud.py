@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
-from app import models, schemas
+import models, schemas
 
 # ========== CRUD для игр ==========
 def get_games(db: Session, skip: int = 0, limit: int = 100):
@@ -69,32 +69,33 @@ def authenticate_user(db: Session, username: str, password: str):
 
 # ========== CRUD для корзины ==========
 def get_cart_items(db: Session, user_id: int, status: str = "cart"):
-    """Получить корзину пользователя"""
+    # Добавили фильтр по статусу, чтобы купленные игры не висели в корзине
     return db.query(models.Cart).filter(
-        and_(models.Cart.user_id == user_id, models.Cart.status == status)
+        models.Cart.user_id == user_id,
+        models.Cart.status == status
     ).all()
 
-def add_to_cart(db: Session, user_id: int, game_id: int, quantity: int = 1):
-    """Добавить игру в корзину"""
-    # Проверяем, есть ли уже такая игра в корзине
+
+def add_to_cart(db: Session, item: schemas.CartCreate):
+    # Проверяем, есть ли уже такая игра в корзине у пользователя
     cart_item = db.query(models.Cart).filter(
-        and_(
-            models.Cart.user_id == user_id,
-            models.Cart.game_id == game_id,
-            models.Cart.status == "cart"
-        )
+        models.Cart.user_id == item.user_id,
+        models.Cart.game_id == item.game_id,
+        models.Cart.status == "cart"
     ).first()
-    
+
     if cart_item:
-        cart_item.quantity += quantity
+        # Если есть, просто увеличиваем количество
+        cart_item.quantity += item.quantity
     else:
+        # Если нет, создаем новую запись
         cart_item = models.Cart(
-            user_id=user_id,
-            game_id=game_id,
-            quantity=quantity
+            user_id=item.user_id,
+            game_id=item.game_id,
+            quantity=item.quantity
         )
         db.add(cart_item)
-    
+
     db.commit()
     db.refresh(cart_item)
     return cart_item
