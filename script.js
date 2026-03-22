@@ -166,7 +166,8 @@ async function handleAuth(type) {
     const password = document.getElementById(`${prefix}-password`).value;
     
     try {
-        const res = await fetch(`${API_URL}/${type === 'login' ? 'login' : 'users'}`, {
+        const endpoint = type === 'login' ? 'login' : 'register';
+        const res = await fetch(`${API_URL}/${endpoint}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, password})
