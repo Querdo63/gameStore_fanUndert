@@ -101,11 +101,14 @@ function updateCartUI() {
 
     container.innerHTML = '';
     let total = 0;
+    let totalItems = 0; // Добавили переменную для счетчика
 
     cart.forEach(item => {
-        // Защита от ошибки "Данные игры не найдены"
-        const game = item.game || { title: "Игра удалена", price: 0 };
+        // Если бэкенд не прислал игру, ставим заглушку
+        const game = item.game || { title: "Ошибка загрузки", price: 0 };
+
         total += game.price * item.quantity;
+        totalItems += item.quantity; // Считаем общее количество
 
         const div = document.createElement('div');
         div.className = 'cart-item';
@@ -119,8 +122,10 @@ function updateCartUI() {
     });
 
     totalEl.textContent = `ИТОГО: ${total} ₽`;
+
+    // Обновляем счетчик в меню
     const count = document.getElementById('cart-count');
-    if (count) count.textContent = cart.length;
+    if (count) count.textContent = totalItems;
 }
 
 // 4. События и Кнопки
