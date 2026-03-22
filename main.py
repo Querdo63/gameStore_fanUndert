@@ -21,7 +21,7 @@ def seed_initial_data():
                 genre="RPG",
                 author="Toby Fox",
                 description="The RPG game where you don't have to destroy anyone.",
-                image_url="https://upload.wikimedia.org/wikipedia/ru/a/a6/Undertale_logo.jpg"
+                image_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRej2CONlSJVMDYk0QKtPS9m-zIpBWU4wB_HQ&s"
             )
             db.add(undertale)
             db.commit()
