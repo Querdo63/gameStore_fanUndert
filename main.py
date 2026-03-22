@@ -60,7 +60,7 @@ def login(user: schemas.UserLogin, db: Session = Depends(get_db)):
 def add_to_cart(item: schemas.CartCreate, db: Session = Depends(get_db)):
     return crud.add_to_cart(db, item) # Передаем db и объект целиком
 
-@app.get("/cart/{user_id}")
+@app.get("/cart/{user_id}", response_model=List[schemas.CartItem])
 def get_user_cart(user_id: int, db: Session = Depends(get_db)):
     return crud.get_cart_items(db, user_id)
 
