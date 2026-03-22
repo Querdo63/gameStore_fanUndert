@@ -157,6 +157,27 @@ function setupEventListeners() {
     // Авторизация
     document.getElementById('login-submit').onclick = () => handleAuth('login');
     document.getElementById('register-submit').onclick = () => handleAuth('register');
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.onclick = (e) => {
+            // 1. Убираем красное подчеркивание со всех вкладок
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+
+            // 2. Делаем активной ту вкладку, на которую только что нажали
+            e.target.classList.add('active');
+
+            // 3. Узнаем, какую форму нужно показать ('login' или 'reg')
+            const targetForm = e.target.dataset.tab;
+
+            // 4. Скрываем одну форму и показываем другую
+            if (targetForm === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            } else {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+            }
+        };
+    });
 }
 
 // Вспомогательные функции (Auth/UI)
