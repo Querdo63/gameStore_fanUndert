@@ -68,9 +68,12 @@ def authenticate_user(db: Session, username: str, password: str):
 
 
 # ========== CRUD для корзины ==========
-def get_cart_items(db: Session, user_id: int):
-    # .all() вернет список объектов Cart, у которых должно быть свойство .game
-    return db.query(models.Cart).filter(models.Cart.user_id == user_id).all()
+def get_cart_items(db: Session, user_id: int, status: str = "cart"):
+    # Добавили фильтр по статусу, чтобы купленные игры не висели в корзине
+    return db.query(models.Cart).filter(
+        models.Cart.user_id == user_id,
+        models.Cart.status == status
+    ).all()
 
 
 def add_to_cart(db: Session, item: schemas.CartCreate):
