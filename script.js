@@ -146,7 +146,14 @@ function setupEventListeners() {
     // Блоки в сайдбаре
     document.getElementById('user-block').onclick = () => {
         if (!currentUser) {
+            // Если не авторизован - показываем окно входа
             document.getElementById('auth-modal').style.display = 'flex';
+        } else {
+            // Если авторизован - спрашиваем, хочет ли он выйти
+            if (confirm("Вы хотите выйти из аккаунта?")) {
+                localStorage.removeItem('currentUser'); // Удаляем из памяти браузера
+                location.reload(); // Перезагружаем страницу
+            }
         }
     };
 
