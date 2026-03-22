@@ -169,6 +169,9 @@ function setupEventListeners() {
     // Авторизация
     document.getElementById('login-submit').onclick = () => handleAuth('login');
     document.getElementById('register-submit').onclick = () => handleAuth('register');
+
+    document.getElementById('checkout-btn').onclick = handleCheckout;
+
     document.querySelectorAll('.auth-tab').forEach(tab => {
         tab.onclick = (e) => {
             // 1. Убираем красное подчеркивание со всех вкладок
@@ -231,4 +234,41 @@ async function addToCart(gameId) {
         body: JSON.stringify({user_id: currentUser.id, game_id: gameId, quantity: 1})
     });
     loadCart();
+}
+
+// Функция оформления заказа
+async function handleCheckout() {
+    if (!currentUser) return;
+
+    try {
+        // Отправляем запрос на бэкенд
+        const response = await fetch(`${API_URL}/cart/checkout/${currentUser.id}`, {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // Если всё прошло успешно
+            alert("Успешно! " + result.message);
+
+            // Обновляем баланс пользователя в памяти браузера
+            currentUser.balance = result.new_balance;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Обновляем имя и баланс в левом меню
+            updateUI();
+
+            // Закрываем корзину и перезагружаем её (она станет пустой)
+            document.getElementById('cart-modal').style.display = 'none';
+            document.getElementById('cart-modal').classList.remove('active');
+            loadCart();
+        } else {
+            // Если бэкенд вернул ошибку (например, недостаточно денег)
+            alert("Ошибка: " + result.detail);
+        }
+    } catch (err) {
+        console.error("Ошибка при оформлении заказа:", err);
+        alert("Произошла ошибка при связи с сервером.");
+    }
 }
