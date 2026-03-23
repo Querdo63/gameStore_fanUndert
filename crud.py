@@ -68,31 +68,34 @@ def authenticate_user(db: Session, username: str, password: str):
 
 
 # ========== CRUD для корзины ==========
-def get_cart_items(db: Session, user_id: int):
-    # .all() вернет список объектов Cart, у которых должно быть свойство .game
-    return db.query(models.Cart).filter(models.Cart.user_id == user_id).all()
+def get_cart_items(db: Session, user_id: int, status: str = "cart"):
+    # Добавили фильтр по статусу, чтобы купленные игры не висели в корзине
+    return db.query(models.Cart).filter(
+        models.Cart.user_id == user_id,
+        models.Cart.status == status
+    ).all()
+
 
 def add_to_cart(db: Session, item: schemas.CartCreate):
-    db_item = models.Cart(
-        user_id=item.user_id,
-        game_id=item.game_id,
-        quantity=item.quantity  # Проверь, как написано в models: quanity или quantity
-    )
-    db.add(db_item)
-    db.commit()
-    db.refresh(db_item)
-    return db_item
-    
+    # Проверяем, есть ли уже такая игра в корзине у пользователя
+    cart_item = db.query(models.Cart).filter(
+        models.Cart.user_id == item.user_id,
+        models.Cart.game_id == item.game_id,
+        models.Cart.status == "cart"
+    ).first()
+
     if cart_item:
-        cart_item.quantity += quantity
+        # Если есть, просто увеличиваем количество
+        cart_item.quantity += item.quantity
     else:
+        # Если нет, создаем новую запись
         cart_item = models.Cart(
-            user_id=user_id,
-            game_id=game_id,
-            quantity=quantity
+            user_id=item.user_id,
+            game_id=item.game_id,
+            quantity=item.quantity
         )
         db.add(cart_item)
-    
+
     db.commit()
     db.refresh(cart_item)
     return cart_item
@@ -148,3 +151,18 @@ def checkout(db: Session, user_id: int):
         "total": total,
         "new_balance": user.balance
     }
+
+def topup_balance(db: Session, user_id: int, amount: int = 1000):
+    user = get_user_by_id(db, user_id)
+    if user:
+        user.balance += amount
+        db.commit()
+        db.refresh(user)
+    return user
+
+def get_user_library(db: Session, user_id: int):
+    # Получаем только те записи, которые были оплачены (status="ordered")
+    return db.query(models.Cart).filter(
+        models.Cart.user_id == user_id, 
+        models.Cart.status == "ordered"
+    ).all()
