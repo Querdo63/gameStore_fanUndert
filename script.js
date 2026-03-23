@@ -44,6 +44,56 @@ async function renderGames(filterText = '') {
     }
 }
 
+// Пополнение баланса
+async function topupBalance() {
+    if (!currentUser) return;
+    const response = await fetch(`${API_URL}/users/${currentUser.id}/topup`, { method: 'POST' });
+    const updatedUser = await response.json();
+    currentUser.balance = updatedUser.balance;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateUI();
+}
+
+// Удаление из корзины
+async function removeFromCart(cartId) {
+    await fetch(`${API_URL}/cart/remove/${cartId}`, { method: 'DELETE' });
+    loadCart(); // Перерисовываем корзину
+}
+
+// Показ библиотеки
+async function loadLibrary() {
+    if (!currentUser) return;
+    const response = await fetch(`${API_URL}/library/${currentUser.id}`);
+    const items = await response.json();
+    const container = document.getElementById('library-items-container');
+    
+    container.innerHTML = items.length ? items.map(item => `
+        <div class="cart-item">
+            <span>${item.game.title}</span>
+            <span style="color: #0f0;">УСТАНОВЛЕНО</span>
+        </div>
+    `).join('') : "Пока тут пусто...";
+    
+    document.getElementById('library-modal').style.display = 'flex';
+}
+
+async function clearCart() {
+    if (!currentUser) return;
+    if (!confirm("Вы уверены, что хотите очистить всю корзину?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/cart/clear/${currentUser.id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            loadCart(); // Обновляем интерфейс
+        }
+    } catch (err) {
+        console.error("Ошибка при очистке корзины:", err);
+    }
+}
+
 // 2. Открытие модального окна (с исправлением контента)
 function openModal(game) {
     const overlay = document.getElementById('modal-overlay');
@@ -89,6 +139,15 @@ async function loadCart() {
         if (!response.ok) return;
         cart = await response.json();
         updateCartUI();
+        const total = calculateTotal(); // предположим, сумма считается тут
+    const creditBtn = document.getElementById('credit-btn');
+    
+    // Показываем кнопку кредита, если денег меньше, чем сумма корзины
+    if (currentUser && currentUser.balance < total) {
+        creditBtn.style.display = 'block';
+    } else {
+        creditBtn.style.display = 'none';
+    }
     } catch (err) {
         console.error("Ошибка корзины:", err);
     }
@@ -101,11 +160,14 @@ function updateCartUI() {
 
     container.innerHTML = '';
     let total = 0;
+    let totalItems = 0; // Добавили переменную для счетчика
 
     cart.forEach(item => {
-        // Защита от ошибки "Данные игры не найдены"
-        const game = item.game || { title: "Игра удалена", price: 0 };
+        // Если бэкенд не прислал игру, ставим заглушку
+        const game = item.game || { title: "Ошибка загрузки", price: 0 };
+
         total += game.price * item.quantity;
+        totalItems += item.quantity; // Считаем общее количество
 
         const div = document.createElement('div');
         div.className = 'cart-item';
@@ -119,8 +181,10 @@ function updateCartUI() {
     });
 
     totalEl.textContent = `ИТОГО: ${total} ₽`;
+
+    // Обновляем счетчик в меню
     const count = document.getElementById('cart-count');
-    if (count) count.textContent = cart.length;
+    if (count) count.textContent = totalItems;
 }
 
 // 4. События и Кнопки
@@ -133,6 +197,10 @@ function setupEventListeners() {
                 m.classList.remove('active');
             });
         };
+    document.getElementById('library-btn').addEventListener('click', loadLibrary);
+    document.getElementById('credit-btn').onclick = takeCredit;
+    document.getElementById('library-btn').onclick = loadLibrary;
+    document.getElementById('clear-cart-btn').onclick = clearCart;
     });
 
     // Поиск
@@ -141,7 +209,14 @@ function setupEventListeners() {
     // Блоки в сайдбаре
     document.getElementById('user-block').onclick = () => {
         if (!currentUser) {
+            // Если не авторизован - показываем окно входа
             document.getElementById('auth-modal').style.display = 'flex';
+        } else {
+            // Если авторизован - спрашиваем, хочет ли он выйти
+            if (confirm("Вы хотите выйти из аккаунта?")) {
+                localStorage.removeItem('currentUser'); // Удаляем из памяти браузера
+                location.reload(); // Перезагружаем страницу
+            }
         }
     };
 
@@ -157,6 +232,44 @@ function setupEventListeners() {
     // Авторизация
     document.getElementById('login-submit').onclick = () => handleAuth('login');
     document.getElementById('register-submit').onclick = () => handleAuth('register');
+
+    document.getElementById('checkout-btn').onclick = handleCheckout;
+
+    document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.onclick = (e) => {
+            // 1. Убираем красное подчеркивание со всех вкладок
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+
+            // 2. Делаем активной ту вкладку, на которую только что нажали
+            e.target.classList.add('active');
+
+            // 3. Узнаем, какую форму нужно показать ('login' или 'reg')
+            const targetForm = e.target.dataset.tab;
+
+            // 4. Скрываем одну форму и показываем другую
+            if (targetForm === 'login') {
+                document.getElementById('login-form').classList.remove('hidden');
+                document.getElementById('register-form').classList.add('hidden');
+            } else {
+                document.getElementById('login-form').classList.add('hidden');
+                document.getElementById('register-form').classList.remove('hidden');
+            }
+        };
+    });
+}
+
+
+// Функция пополнения
+async function takeCredit() {
+    if (!currentUser) return;
+    const response = await fetch(`${API_URL}/users/${currentUser.id}/topup`, { method: 'POST' });
+    const updatedUser = await response.json();
+    
+    // Обновляем данные локально
+    currentUser.balance = updatedUser.balance;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateUI();
+    loadCart(); // Пересчитываем корзину, чтобы скрыть/показать кнопку
 }
 
 // Вспомогательные функции (Auth/UI)
@@ -166,7 +279,8 @@ async function handleAuth(type) {
     const password = document.getElementById(`${prefix}-password`).value;
     
     try {
-        const res = await fetch(`${API_URL}/${type === 'login' ? 'login' : 'users'}`, {
+        const endpoint = type === 'login' ? 'login' : 'register';
+        const res = await fetch(`${API_URL}/${endpoint}`, {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify({username, password})
@@ -197,4 +311,41 @@ async function addToCart(gameId) {
         body: JSON.stringify({user_id: currentUser.id, game_id: gameId, quantity: 1})
     });
     loadCart();
+}
+
+// Функция оформления заказа
+async function handleCheckout() {
+    if (!currentUser) return;
+
+    try {
+        // Отправляем запрос на бэкенд
+        const response = await fetch(`${API_URL}/cart/checkout/${currentUser.id}`, {
+            method: 'POST'
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            // Если всё прошло успешно
+            alert("Успешно! " + result.message);
+
+            // Обновляем баланс пользователя в памяти браузера
+            currentUser.balance = result.new_balance;
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+
+            // Обновляем имя и баланс в левом меню
+            updateUI();
+
+            // Закрываем корзину и перезагружаем её (она станет пустой)
+            document.getElementById('cart-modal').style.display = 'none';
+            document.getElementById('cart-modal').classList.remove('active');
+            loadCart();
+        } else {
+            // Если бэкенд вернул ошибку (например, недостаточно денег)
+            alert("Ошибка: " + result.detail);
+        }
+    } catch (err) {
+        console.error("Ошибка при оформлении заказа:", err);
+        alert("Произошла ошибка при связи с сервером.");
+    }
 }
