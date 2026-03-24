@@ -91,7 +91,7 @@ def add_to_cart(db: Session, item: schemas.CartCreate):
         # Если нет, создаем новую запись
         cart_item = models.Cart(
             user_id=item.user_id,
-            game_id=item.game_id,
+            game_id=item.user_id,
             quantity=item.quantity
         )
         db.add(cart_item)
