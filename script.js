@@ -131,6 +131,17 @@ function openModal(game) {
     };
 }
 
+// Новая функция для подсчета суммы
+function calculateTotal() {
+    let total = 0;
+    cart.forEach(item => {
+        if (item.game) {
+            total += item.game.price * item.quantity;
+        }
+    });
+    return total;
+}
+
 // 3. Логика корзины (с защитой от 500 ошибки и пустых игр)
 async function loadCart() {
     if (!currentUser) return;
@@ -151,17 +162,6 @@ async function loadCart() {
     } catch (err) {
         console.error("Ошибка корзины:", err);
     }
-}
-
-// Новая функция для подсчета суммы
-function calculateTotal() {
-    let total = 0;
-    cart.forEach(item => {
-        if (item.game) {
-            total += item.game.price * item.quantity;
-        }
-    });
-    return total;
 }
 
 function updateCartUI() {
