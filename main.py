@@ -31,7 +31,33 @@ def seed_initial_data():
                 description="Deltarune is a role-playing game where a human and a monster fall into a mysterious Dark World to fulfill an ancient prophecy.",
                 image_url="https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.lagofastbooster.ru%2Fblog%2Fundertale-%25D0%25BF%25D0%25B5%25D1%2580%25D0%25B5%25D0%25B2%25D0%25BE%25D0%25B4-%25D0%25BD%25D0%25B0-%25D1%2580%25D1%2583%25D1%2581%25D1%2581%25D0%25BA%25D0%25B8%25D0%25B9%2F&ved=0CBYQjRxqFwoTCKCLnp6guZMDFQAAAAAdAAAAABBA&opi=89978449"
             )
-            db.add_all([undertale, deltarune])
+            lobotomy_corp = models.Game(
+                title="Lobotomy Corporation",
+                price=435,
+                genre="Simulation",
+                author="Project Moon",
+                description="Face the fear, build the future: manage monsters to produce energy.",
+                image_url="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/568220/header.jpg?t=1636694188"
+            )
+
+            hollow_knight = models.Game(
+                title="Hollow Knight",
+                price=550,
+                genre="Metroidvania",
+                author="Team Cherry",
+                description="Forge your own path in a vast, ruined kingdom of insects and heroes.",
+                image_url="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/367520/3c3489495136b26b34f8a9543c7f5645b99d388c/header.jpg?t=1770338567"
+            )
+
+            dark_souls_3 = models.Game(
+                title="DARK SOULS III",
+                price=2499,
+                genre="Action RPG",
+                author="FromSoftware",
+                description="Embrace the darkness and test your resolve in the finale of the legendary trilogy.",
+                image_url="https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/374320/header.jpg?t=1748630784"
+            )
+            db.add_all([undertale, deltarune, lobotomy_corp, hollow_knight, dark_souls_3])
             db.commit()
             print("✅ Стартовые игры UNDERTALE и DELTARUNE успешно добавлены в новую базу!")
     finally:
