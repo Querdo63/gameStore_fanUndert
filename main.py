@@ -92,3 +92,26 @@ def checkout(user_id: int, db: Session = Depends(get_db)):
     if not result["success"]:
         raise HTTPException(status_code=400, detail=result["message"])
     return result
+
+@app.post("/users/{user_id}/topup")
+def topup_balance(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if user:
+        user.balance += 1000
+        db.commit()
+        db.refresh(user)
+    return user
+
+@app.get("/library/{user_id}", response_model=List[schemas.CartItem])
+def get_library(user_id: int, db: Session = Depends(get_db)):
+    return crud.get_user_library(db, user_id)
+
+@app.delete("/cart/clear/{user_id}")
+def clear_user_cart(user_id: int, db: Session = Depends(get_db)):
+    # Удаляем все записи из таблицы Cart для этого пользователя, где статус "cart"
+    db.query(models.Cart).filter(
+        models.Cart.user_id == user_id, 
+        models.Cart.status == "cart"
+    ).delete()
+    db.commit()
+    return {"success": True}

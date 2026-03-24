@@ -44,6 +44,56 @@ async function renderGames(filterText = '') {
     }
 }
 
+// Пополнение баланса
+async function topupBalance() {
+    if (!currentUser) return;
+    const response = await fetch(`${API_URL}/users/${currentUser.id}/topup`, { method: 'POST' });
+    const updatedUser = await response.json();
+    currentUser.balance = updatedUser.balance;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateUI();
+}
+
+// Удаление из корзины
+async function removeFromCart(cartId) {
+    await fetch(`${API_URL}/cart/remove/${cartId}`, { method: 'DELETE' });
+    loadCart(); // Перерисовываем корзину
+}
+
+// Показ библиотеки
+async function loadLibrary() {
+    if (!currentUser) return;
+    const response = await fetch(`${API_URL}/library/${currentUser.id}`);
+    const items = await response.json();
+    const container = document.getElementById('library-items-container');
+    
+    container.innerHTML = items.length ? items.map(item => `
+        <div class="cart-item">
+            <span>${item.game.title}</span>
+            <span style="color: #0f0;">УСТАНОВЛЕНО</span>
+        </div>
+    `).join('') : "Пока тут пусто...";
+    
+    document.getElementById('library-modal').style.display = 'flex';
+}
+
+async function clearCart() {
+    if (!currentUser) return;
+    if (!confirm("Вы уверены, что хотите очистить всю корзину?")) return;
+
+    try {
+        const response = await fetch(`${API_URL}/cart/clear/${currentUser.id}`, {
+            method: 'DELETE'
+        });
+
+        if (response.ok) {
+            loadCart(); // Обновляем интерфейс
+        }
+    } catch (err) {
+        console.error("Ошибка при очистке корзины:", err);
+    }
+}
+
 // 2. Открытие модального окна (с исправлением контента)
 function openModal(game) {
     const overlay = document.getElementById('modal-overlay');
@@ -81,6 +131,17 @@ function openModal(game) {
     };
 }
 
+// Новая функция для подсчета суммы
+function calculateTotal() {
+    let total = 0;
+    cart.forEach(item => {
+        if (item.game) {
+            total += item.game.price * item.quantity;
+        }
+    });
+    return total;
+}
+
 // 3. Логика корзины (с защитой от 500 ошибки и пустых игр)
 async function loadCart() {
     if (!currentUser) return;
@@ -89,6 +150,15 @@ async function loadCart() {
         if (!response.ok) return;
         cart = await response.json();
         updateCartUI();
+        const total = calculateTotal(); // предположим, сумма считается тут
+    const creditBtn = document.getElementById('credit-btn');
+    
+    // Показываем кнопку кредита, если денег меньше, чем сумма корзины
+    if (currentUser && currentUser.balance < total) {
+        creditBtn.style.display = 'block';
+    } else {
+        creditBtn.style.display = 'none';
+    }
     } catch (err) {
         console.error("Ошибка корзины:", err);
     }
@@ -139,6 +209,11 @@ function setupEventListeners() {
             });
         };
     });
+
+    document.getElementById('library-btn').addEventListener('click', loadLibrary);
+    document.getElementById('credit-btn').onclick = takeCredit;
+    document.getElementById('library-btn').onclick = loadLibrary;
+    document.getElementById('clear-cart-btn').onclick = clearCart;
 
     // Поиск
     document.getElementById('search-input').oninput = (e) => renderGames(e.target.value);
@@ -193,6 +268,20 @@ function setupEventListeners() {
             }
         };
     });
+}
+
+
+// Функция пополнения
+async function takeCredit() {
+    if (!currentUser) return;
+    const response = await fetch(`${API_URL}/users/${currentUser.id}/topup`, { method: 'POST' });
+    const updatedUser = await response.json();
+    
+    // Обновляем данные локально
+    currentUser.balance = updatedUser.balance;
+    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+    updateUI();
+    loadCart(); // Пересчитываем корзину, чтобы скрыть/показать кнопку
 }
 
 // Вспомогательные функции (Auth/UI)
