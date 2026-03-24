@@ -23,7 +23,15 @@ def seed_initial_data():
                 description="The RPG game where you don't have to destroy anyone.",
                 image_url="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRej2CONlSJVMDYk0QKtPS9m-zIpBWU4wB_HQ&s"
             )
-            db.add(undertale)
+            deltarune = models.Game(
+                title="DELTARUNE",
+                price=1099,
+                genre="RPG",
+                author="Toby Fox",
+                description="Deltarune is a role-playing game where a human and a monster fall into a mysterious Dark World to fulfill an ancient prophecy.",
+                image_url="https://www.google.com/url?sa=t&source=web&rct=j&url=https%3A%2F%2Fwww.lagofastbooster.ru%2Fblog%2Fundertale-%25D0%25BF%25D0%25B5%25D1%2580%25D0%25B5%25D0%25B2%25D0%25BE%25D0%25B4-%25D0%25BD%25D0%25B0-%25D1%2580%25D1%2583%25D1%2581%25D1%2581%25D0%25BA%25D0%25B8%25D0%25B9%2F&ved=0CBYQjRxqFwoTCKCLnp6guZMDFQAAAAAdAAAAABBA&opi=89978449"
+            )
+            db.add_all([undertale, deltarune])
             db.commit()
             print("✅ Стартовая игра UNDERTALE успешно добавлена в новую базу!")
     finally:
