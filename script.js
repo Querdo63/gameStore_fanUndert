@@ -153,6 +153,17 @@ async function loadCart() {
     }
 }
 
+// Новая функция для подсчета суммы
+function calculateTotal() {
+    let total = 0;
+    cart.forEach(item => {
+        if (item.game) {
+            total += item.game.price * item.quantity;
+        }
+    });
+    return total;
+}
+
 function updateCartUI() {
     const container = document.getElementById('cart-items-container');
     const totalEl = document.getElementById('cart-total');
