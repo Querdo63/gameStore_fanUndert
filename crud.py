@@ -151,3 +151,18 @@ def checkout(db: Session, user_id: int):
         "total": total,
         "new_balance": user.balance
     }
+
+def topup_balance(db: Session, user_id: int, amount: int = 1000):
+    user = get_user_by_id(db, user_id)
+    if user:
+        user.balance += amount
+        db.commit()
+        db.refresh(user)
+    return user
+
+def get_user_library(db: Session, user_id: int):
+    # Получаем только те записи, которые были оплачены (status="ordered")
+    return db.query(models.Cart).filter(
+        models.Cart.user_id == user_id, 
+        models.Cart.status == "ordered"
+    ).all()

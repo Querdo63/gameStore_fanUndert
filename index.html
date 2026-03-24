@@ -19,6 +19,11 @@
                 <input type="text" id="search-input" placeholder="название игры...">
             </div>
 
+            <div class="library-block" id="library-btn" style="cursor:pointer;">
+                <span class="icon">★</span>
+                <span>Мои игры</span>
+            </div>
+
             <div class="cart-block" id="cart-block">
                 <span class="icon">⊞</span>
                 <span>Корзина</span>
@@ -46,7 +51,11 @@
             <h2 style="color: #f00; margin-bottom: 20px;">КОРЗИНА</h2>
             <div id="cart-items-container"></div>
             <div class="cart-total" id="cart-total">ИТОГО: 0 ₽</div>
+            <button id="clear-cart-btn" class="checkout-btn" style="background: #333; margin-bottom: 10px;">ОЧИСТИТЬ КОРЗИНУ</button>
             <button class="checkout-btn" id="checkout-btn">ОФОРМИТЬ ЗАКАЗ</button>
+            <button id="credit-btn" class="checkout-btn" style="margin-top: 10px; background: #555;">
+                ВЗЯТЬ КРЕДИТ (+1000 ₽)
+            </button>
         </div>
     </div>
 
@@ -67,6 +76,13 @@
                 <input type="password" id="reg-password" class="auth-input" placeholder="НОВЫЙ ПАРОЛЬ">
                 <button id="register-submit" class="auth-submit">СОЗДАТЬ</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="library-modal">
+        <div class="modal-content">
+            <h2 style="color: #fff; margin-bottom: 20px;">МОИ ШЕДЕВРЫ</h2>
+            <div id="library-items-container"></div>
         </div>
     </div>
 
