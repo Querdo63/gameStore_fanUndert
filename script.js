@@ -208,11 +208,12 @@ function setupEventListeners() {
                 m.classList.remove('active');
             });
         };
+    });
+
     document.getElementById('library-btn').addEventListener('click', loadLibrary);
     document.getElementById('credit-btn').onclick = takeCredit;
     document.getElementById('library-btn').onclick = loadLibrary;
     document.getElementById('clear-cart-btn').onclick = clearCart;
-    });
 
     // Поиск
     document.getElementById('search-input').oninput = (e) => renderGames(e.target.value);
