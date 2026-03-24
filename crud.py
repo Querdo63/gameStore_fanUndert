@@ -129,7 +129,7 @@ def checkout(db: Session, user_id: int):
     total = 0
     for item in cart_items:
         if item.game:
-            total += item.game.price * item.quantity
+            total += item.game.price
     
     user = get_user_by_id(db, user_id)
     
