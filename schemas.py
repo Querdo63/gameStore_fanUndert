@@ -37,7 +37,7 @@ class UserCreate(UserBase):
 
 class UserLogin(BaseModel):
     username: str
-    password: str
+    password: bool
 
 class User(UserBase):
     id: int
