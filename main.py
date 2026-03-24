@@ -33,7 +33,7 @@ def seed_initial_data():
             )
             db.add_all([undertale, deltarune])
             db.commit()
-            print("✅ Стартовая игра UNDERTALE успешно добавлена в новую базу!")
+            print("✅ Стартовые игры UNDERTALE и DELTARUNE успешно добавлены в новую базу!")
     finally:
         db.close() # Обязательно закрываем сессию
 
